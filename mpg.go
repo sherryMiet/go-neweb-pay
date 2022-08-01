@@ -1,16 +1,8 @@
 package neweb_pay
 
 import (
-	"bytes"
-	"crypto/sha256"
-	"encoding/hex"
-	"github.com/sirupsen/logrus"
-	"html/template"
-	"io/ioutil"
-	"net/http"
 	"net/url"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -229,9 +221,6 @@ func (m *MPGGateWayTradeInfo) WithOptional(OptionValue OptionValue) *MPGGateWayT
 	} else {
 		m.TradeLimit = OptionValue.TradeLimit
 	}
-	if OptionValue.MerchantOrderNo == "" {
-		m.MerchantOrderNo = GenSonyflake()
-	}
 	m.ReturnURL = url.QueryEscape(OptionValue.ReturnURL)
 	m.NotifyURL = url.QueryEscape(OptionValue.NotifyURL)
 	m.CustomerURL = url.QueryEscape(OptionValue.CustomerURL)
@@ -241,7 +230,7 @@ func (m *MPGGateWayTradeInfo) WithOptional(OptionValue OptionValue) *MPGGateWayT
 	m.LoginType = OptionValue.LoginType
 	m.OrderComment = OptionValue.OrderComment
 	if OptionValue.TokenTerm == "" {
-		m.TokenTerm = m.MerchantOrderNo
+		m.TokenTerm = GenSonyflake()
 	} else {
 		m.TokenTerm = OptionValue.TokenTerm
 	}
@@ -330,6 +319,7 @@ func (m *MPGGateWayTradeInfo) SetWebATM() *MPGGateWayTradeInfo {
 	m.WEBATM = WEBATM_Y
 	return m
 }
+
 func (m *MPGGateWayTradeInfo) SetNTCB(NTCBLocate string, NTCBStartDate string, NTCBEndDate string) *MPGGateWayTradeInfo {
 	m.NTCB = 1
 	//旅遊地區代號
@@ -368,65 +358,14 @@ func (c *Client) MPGGateway(Data *MPGGateWayTradeInfo) *MPGGatewayRequestCall {
 	}
 }
 
-func (m *MPGGatewayRequestCall) Do() {
-
-}
-
-func (m *MPGGatewayRequestCall) DoTest() string {
-	url := "https://ccore.newebpay.com/MPG/mpg_gateway"
+func (m *MPGGatewayRequestCall) Do() string {
 	params := StructToParamsMap(m.MPGGatewayRequest)
-	html := GenerateAutoSubmitHtmlForm(params, url)
+	html := GenerateAutoSubmitHtmlForm(params, MPGGatewayUrl)
 	return html
 }
 
-var OrderTemplateText = `<form id="order_form" action="{{.Action}}" enctype="application/x-www-form-urlencoded" method="POST">
-{{range $key,$element := .Values}}    <input type="hidden" name="{{$key}}" id="{{$key}}" value="{{$element}}" />
-{{end -}}
-</form>
-<script>document.querySelector("#order_form").submit();</script>`
-
-type OrderTmplArgs struct {
-	Values map[string]string
-	Action string
-}
-
-var OrderTmpl = template.Must(template.New("AutoPostOrder").Parse(OrderTemplateText))
-
-func GenerateAutoSubmitHtmlForm(params map[string]string, targetUrl string) string {
-
-	var result bytes.Buffer
-	err := OrderTmpl.Execute(&result, OrderTmplArgs{
-		Values: params,
-		Action: targetUrl,
-	})
-	if err != nil {
-		panic(err)
-	}
-	return result.String()
-}
-
-func SendMPGGatewayRequest(Data url.Values, Url string) ([]byte, error) {
-
-	resp, err := http.Post(Url,
-		"application/x-www-form-urlencoded",
-		strings.NewReader(Data.Encode()))
-	if err != nil {
-		logrus.Error(err)
-		return nil, err
-	}
-
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		logrus.Error(err)
-		return nil, err
-	}
-	print(string(body))
-	return body, nil
-}
-
-func SHA256(str string) string {
-	sum := sha256.Sum256([]byte(str))
-	checkMac := strings.ToUpper(hex.EncodeToString(sum[:]))
-	return checkMac
+func (m *MPGGatewayRequestCall) DoTest() string {
+	params := StructToParamsMap(m.MPGGatewayRequest)
+	html := GenerateAutoSubmitHtmlForm(params, TestMPGGatewayUrl)
+	return html
 }

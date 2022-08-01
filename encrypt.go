@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/sha256"
 	"encoding/hex"
+	"strings"
 )
 
 func Aes256(plaintext string, key string, iv string) string {
@@ -16,6 +18,12 @@ func Aes256(plaintext string, key string, iv string) string {
 	mode := cipher.NewCBCEncrypter(block, bIV)
 	mode.CryptBlocks(ciphertext, bPlaintext)
 	return hex.EncodeToString(ciphertext)
+}
+
+func SHA256(str string) string {
+	sum := sha256.Sum256([]byte(str))
+	checkMac := strings.ToUpper(hex.EncodeToString(sum[:]))
+	return checkMac
 }
 
 func AesCBCEncrypt(rawData, key []byte, iv []byte) ([]byte, error) {

@@ -17,7 +17,8 @@ func main() {
 		LoginType:   0,
 		Version:     "1.5",
 	}).
-		CreateOrder("MS140665845", 10, "test")
+		CreateOrder(neweb_pay.GenSonyflake(), 10, "test").
+		SetWebATM()
 
 	html := client.MPGGateway(Info).DoTest()
 	print(html)
