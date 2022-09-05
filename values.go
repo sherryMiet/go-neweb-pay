@@ -125,12 +125,12 @@ func (p LowerStringSlice) Len() int           { return len(p) }
 func (p LowerStringSlice) Less(i, j int) bool { return strings.ToLower(p[i]) < strings.ToLower(p[j]) }
 func (p LowerStringSlice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 
-type ECPayValues struct {
+type NewebPayValues struct {
 	url.Values
 }
 
-func NewValuesFromMap(values map[string]string) *ECPayValues {
-	v := ECPayValues{Values: url.Values{}}
+func NewValuesFromMap(values map[string]string) *NewebPayValues {
+	v := NewebPayValues{Values: url.Values{}}
 	for key, value := range values {
 
 		v.Set(key, value)
@@ -138,7 +138,7 @@ func NewValuesFromMap(values map[string]string) *ECPayValues {
 	return &v
 }
 
-func (v ECPayValues) ToMap() map[string]string {
+func (v NewebPayValues) ToMap() map[string]string {
 	result := make(map[string]string)
 	for key, val := range v.Values {
 		result[key] = val[0]
@@ -146,7 +146,7 @@ func (v ECPayValues) ToMap() map[string]string {
 	return result
 }
 
-func (v ECPayValues) Encode() string {
+func (v NewebPayValues) Encode() string {
 	if v.Values == nil {
 		return ""
 	}

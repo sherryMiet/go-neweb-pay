@@ -17,7 +17,7 @@ const (
 	TestMPGGatewayUrl              = "https://ccore.newebpay.com/MPG/mpg_gateway"
 	MPGGatewayUrl                  = "https://core.newebpay.com/MPG/mpg_gateway"
 	RespondType_JSON   RespondType = "JSON"
-	RespondType_STRING RespondType = "string"
+	RespondType_STRING RespondType = "STRING"
 	TradeLimit                     = 900
 	WEBATM_Y           WEBATM      = 1
 	WEBATM_N           WEBATM      = 0
@@ -343,11 +343,9 @@ func (c *Client) MPGGateway(Data *MPGGateWayTradeInfo) *MPGGatewayRequestCall {
 	Data.MerchantID = c.MerchantID
 	params := StructToParamsMap(Data)
 	paramStr := NewValuesFromMap(params).Encode()
-	cbcEncrypt := Aes256(paramStr, c.HashKey, c.HashIV)
-
 	req := new(MPGGatewayRequest)
 	req.MerchantID = c.MerchantID
-	req.TradeInfo = cbcEncrypt
+	req.TradeInfo = Aes256(paramStr, c.HashKey, c.HashIV)
 	req.TradeSha = SHA256("HashKey=" + c.HashKey + "&" + req.TradeInfo + "&HashIV=" + c.HashIV)
 	req.Version = Version
 	req.EncryptType = 0
