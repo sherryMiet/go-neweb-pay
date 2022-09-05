@@ -1,4 +1,4 @@
-module go-neweb-pay
+module github.com/sherryMiet/go-neweb-pay
 
 go 1.17
 
