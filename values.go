@@ -2,6 +2,7 @@ package neweb_pay
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/url"
 	"reflect"
@@ -170,4 +171,37 @@ func (v NewebPayValues) Encode() string {
 		}
 	}
 	return buf.String()
+}
+
+func StrToMap(in string) map[string]string {
+	res := make(map[string]string)
+	array := strings.Split(in, "&")
+	temp := make([]string, 2)
+	for _, val := range array {
+		temp = strings.Split(string(val), "=")
+		res[temp[0]] = temp[1]
+	}
+	return res
+}
+
+func SetField(obj interface{}, name string, value interface{}) error {
+	structValue := reflect.ValueOf(obj).Elem()
+	structFieldValue := structValue.FieldByName(name)
+
+	if !structFieldValue.IsValid() {
+		return fmt.Errorf("No such field: %s in obj", name)
+	}
+
+	if !structFieldValue.CanSet() {
+		return fmt.Errorf("Cannot set %s field value", name)
+	}
+
+	structFieldType := structFieldValue.Type()
+	val := reflect.ValueOf(value)
+	if structFieldType != val.Type() {
+		return errors.New("Provided value type didn't match obj field type")
+	}
+
+	structFieldValue.Set(val)
+	return nil
 }

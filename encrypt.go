@@ -6,6 +6,7 @@ import (
 	"crypto/cipher"
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"strings"
 )
 
@@ -26,37 +27,39 @@ func SHA256(str string) string {
 	return checkMac
 }
 
-func AesCBCEncrypt(rawData, key []byte, iv []byte) ([]byte, error) {
-	rawData = PKCS7Padding(rawData)
-	ciphertext := make([]byte, len(rawData))
-	block, err := aes.NewCipher(key)
+func DecodeAes256(cipherText string, key string, iv string) string {
+
+	encKeyDecoded, err := hex.DecodeString(key)
 	if err != nil {
-		return nil, err
+		panic(err)
+	}
+	cipherTextDecoded, err := hex.DecodeString(cipherText)
+	if err != nil {
+		panic(err)
+	}
+	ivDecoded, err := hex.DecodeString(iv)
+	if err != nil {
+		panic(err)
+	}
+	block, err := aes.NewCipher([]byte(encKeyDecoded))
+	if err != nil {
+		panic(err)
 	}
 
-	mode := cipher.NewCBCEncrypter(block, iv)
-	mode.CryptBlocks(ciphertext, rawData)
+	mode := cipher.NewCBCDecrypter(block, []byte(ivDecoded))
 
-	return ciphertext, nil
+	mode.CryptBlocks([]byte(cipherTextDecoded), []byte(cipherTextDecoded))
+
+	fmt.Println(string(cipherTextDecoded))
+	return string(cipherTextDecoded)
 }
-func AesCBCDecrypt(rawData, key []byte, iv []byte) ([]byte, error) {
 
-	ciphertext := make([]byte, len(rawData))
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		return nil, err
-	}
-	mode := cipher.NewCBCDecrypter(block, iv)
-	mode.CryptBlocks(ciphertext, rawData)
-
-	ciphertext = PKCS7UnPadding(ciphertext)
-	return ciphertext, nil
-}
 func PKCS7Padding(ciphertext []byte) []byte {
 	padding := aes.BlockSize - len(ciphertext)%aes.BlockSize
 	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
 	return append(ciphertext, padtext...)
 }
+
 func PKCS7UnPadding(plantText []byte) []byte {
 	length := len(plantText)
 	unpadding := int(plantText[length-1])
