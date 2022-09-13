@@ -28,25 +28,19 @@ func SHA256(str string) string {
 }
 
 func DecodeAes256(cipherText string, key string, iv string) string {
-
-	encKeyDecoded, err := hex.DecodeString(key)
-	if err != nil {
-		panic(err)
-	}
+	bIV := []byte(iv)
+	bKey := []byte(key)
 	cipherTextDecoded, err := hex.DecodeString(cipherText)
 	if err != nil {
-		panic(err)
+		fmt.Errorf(err.Error())
+		return ""
 	}
-	ivDecoded, err := hex.DecodeString(iv)
-	if err != nil {
-		panic(err)
-	}
-	block, err := aes.NewCipher([]byte(encKeyDecoded))
+	block, err := aes.NewCipher(bKey)
 	if err != nil {
 		panic(err)
 	}
 
-	mode := cipher.NewCBCDecrypter(block, []byte(ivDecoded))
+	mode := cipher.NewCBCDecrypter(block, bIV)
 
 	mode.CryptBlocks([]byte(cipherTextDecoded), []byte(cipherTextDecoded))
 
