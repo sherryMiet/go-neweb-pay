@@ -68,11 +68,11 @@ type Result struct {
 	//ECI
 	//1.3D 回傳值 eci=1,2,5,6，代表為 3D 交易。
 	//2.若交易送至收單機構授權時已是失敗狀態，則本欄位的值會以空值回傳。
-	ECI string `db:"eci"`
+	ECI int `db:"eci"`
 	//信用卡快速結帳使用狀態
 	TokenUseStatus string `db:"token_use_status"`
 	//紅利折抵後實際金額
-	RedAmt string `db:"red_amt"`
+	RedAmt int `db:"red_amt"`
 	//交易類別
 	PaymentMethod string `db:"payment_method"`
 	//外幣金額
@@ -105,7 +105,7 @@ type Result struct {
 	//第三段條碼
 	Barcode_3 string `db:"barcode_3"`
 	//付款次數
-	RepayTimes string `db:"repay_times"`
+	RepayTimes int `db:"repay_times"`
 	//繳費超商
 	PayStore string `db:"pay_store"`
 	//**超商物流回傳參數**
