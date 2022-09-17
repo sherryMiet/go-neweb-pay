@@ -1,5 +1,10 @@
 package neweb_pay
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 type MPGGatewayResult struct {
 	//回傳狀態
 	Status string
@@ -21,12 +26,14 @@ type TradeInfo struct {
 	//回傳訊息
 	Message string
 	//回傳參數
-	Result string
+	Result Result
+}
+type Result struct {
 	// **所有支付方式共同回傳參數**
 	//商店代號
 	MerchantID string
 	//交易金額
-	Amt string
+	Amt int
 	//藍新金流交易序號
 	TradeNo string
 	//商店訂單編號
@@ -53,11 +60,11 @@ type TradeInfo struct {
 	//卡號末四碼
 	Card4No string
 	//分期-期別
-	Inst string
+	Inst int
 	//分期-首期金額
-	InstFirst string
+	InstFirst int
 	//分期-每期金額
-	InstEach string
+	InstEach int
 	//ECI
 	//1.3D 回傳值 eci=1,2,5,6，代表為 3D 交易。
 	//2.若交易送至收單機構授權時已是失敗狀態，則本欄位的值會以空值回傳。
@@ -69,11 +76,11 @@ type TradeInfo struct {
 	//交易類別
 	PaymentMethod string
 	//外幣金額
-	DCC_Amt string
+	DCC_Amt int
 	//匯率
-	DCC_Rate string
+	DCC_Rate int
 	//風險匯率
-	DCC_Markup string
+	DCC_Markup int
 	//幣別
 	DCC_Currency string
 	//幣別代碼
@@ -134,11 +141,11 @@ func NewMPGGatewayResult() *MPGGatewayResult {
 	return &MPGGatewayResult{}
 }
 func (m MPGGatewayResult) DecodeTradeInfo(HashKey string, HashIV string) (*TradeInfo, error) {
-	StrData := DecodeAes256(m.TradeInfo, HashKey, HashIV)
-	Data := StrToMap(StrData)
 	info := new(TradeInfo)
-	err := info.FillStruct(Data)
+	StrData := DecodeAes256(m.TradeInfo, HashKey, HashIV)
+	err := json.Unmarshal([]byte(StrData), info)
 	if err != nil {
+		fmt.Errorf(err.Error())
 		return nil, err
 	}
 	return info, nil
