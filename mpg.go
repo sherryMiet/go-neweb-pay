@@ -7,32 +7,21 @@ import (
 )
 
 type (
-	RespondType string
-	WEBATM      int
-	CREDIT      int
+	WEBATM int
+	CREDIT int
 )
 
 const (
-	Version                        = "2.0"
-	TestMPGGatewayUrl              = "https://ccore.newebpay.com/MPG/mpg_gateway"
-	MPGGatewayUrl                  = "https://core.newebpay.com/MPG/mpg_gateway"
-	RespondType_JSON   RespondType = "JSON"
-	RespondType_STRING RespondType = "STRING"
-	TradeLimit                     = 900
-	WEBATM_Y           WEBATM      = 1
-	WEBATM_N           WEBATM      = 0
-	CREDIT_Y           CREDIT      = 1
-	CREDIT_N           CREDIT      = 0
-)
+	Version           = "2.0"
+	TestMPGGatewayUrl = "https://ccore.newebpay.com/MPG/mpg_gateway"
+	MPGGatewayUrl     = "https://core.newebpay.com/MPG/mpg_gateway"
 
-type Client struct {
-	//商店代號
-	MerchantID string
-	//交易資料 AES 加密
-	HashKey string
-	//交易資料 SHA256 加密
-	HashIV string
-}
+	TradeLimit        = 900
+	WEBATM_Y   WEBATM = 1
+	WEBATM_N   WEBATM = 0
+	CREDIT_Y   CREDIT = 1
+	CREDIT_N   CREDIT = 0
+)
 
 type MPGGatewayRequestCall struct {
 	HashKey           string
@@ -188,24 +177,12 @@ type AtmPayment struct {
 	WEBATM int `json:"WEBATM,omitempty"`
 }
 
-func NewClient(MerchantID string, HashKey string, HashIV string) *Client {
-	return &Client{
-		MerchantID: MerchantID,
-		HashKey:    HashKey,
-		HashIV:     HashIV,
-	}
-}
-
 func NewMPGGateWayTradeInfo() *MPGGateWayTradeInfo {
 	return &MPGGateWayTradeInfo{}
 }
 
 func (m *MPGGateWayTradeInfo) WithOptional(OptionValue OptionValue) *MPGGateWayTradeInfo {
-	if OptionValue.RespondType == "" {
-		m.RespondType = RespondType_JSON
-	} else {
-		m.RespondType = OptionValue.RespondType
-	}
+	m.RespondType = RespondType_JSON
 	if OptionValue.TimeStamp == "" {
 		m.TimeStamp = strconv.Itoa(int(time.Now().Unix()))
 	} else {
