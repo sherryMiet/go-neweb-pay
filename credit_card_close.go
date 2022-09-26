@@ -1,6 +1,7 @@
 package neweb_pay
 
 import (
+	"encoding/json"
 	"strconv"
 	"time"
 )
@@ -10,7 +11,7 @@ const (
 	CreditCardCloseUrl               = "https://core.newebpay.com/API/CreditCard/Close"
 	CreditCardCloseVersion           = "1.1"
 	CloseType_Ask          CloseType = 1
-	CloseType_Cancel       CloseType = 0
+	CloseType_Cancel       CloseType = 2
 	Cancel_Y               Cancel    = 1
 )
 
@@ -88,7 +89,7 @@ func (c *Client) CreditCardClose(Data *CreditCardCloseRequest) *CreditCardCloseR
 	Data.TimeStamp = strconv.Itoa(int(time.Now().Unix()))
 	params := StructToParamsMap(Data)
 	paramStr := NewValuesFromMap(params).Encode()
-	PostData := SHA256("HashKey=" + c.HashKey + "&" + paramStr + "&HashIV=" + c.HashIV)
+	PostData := Aes256(paramStr, c.HashKey, c.HashIV)
 	return &CreditCardCloseRequestCall{
 		MerchantID_: c.MerchantID,
 		PostData_:   PostData,
@@ -97,22 +98,34 @@ func (c *Client) CreditCardClose(Data *CreditCardCloseRequest) *CreditCardCloseR
 
 func (c CreditCardCloseRequestCall) Do() (*CreditCardCloseResponse, error) {
 	response := new(CreditCardCloseResponse)
-	//Data := url.Values{}
-	//body, err := SendNewebPayRequest(Data, CreditCardCloseUrl)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//response.ParseFormData(body)
+	PostData := make(map[string]string)
+	PostData["MerchantID_"] = c.MerchantID_
+	PostData["PostData_"] = c.PostData_
+	body, err := SendNewebPayRequest(&PostData, CreditCardCloseUrl)
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(body, response)
+	if err != nil {
+		return nil, err
+	}
 	return response, nil
 }
 
 func (c CreditCardCloseRequestCall) DoTest() (*CreditCardCloseResponse, error) {
 	response := new(CreditCardCloseResponse)
-	//Data := url.Values{}
-	//body, err := SendNewebPayRequest(Data, TestCreditCardCloseUrl)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//response.ParseFormData(body)
+	PostData := make(map[string]string)
+	PostData["MerchantID_"] = c.MerchantID_
+	PostData["PostData_"] = c.PostData_
+	body, err := SendNewebPayRequest(&PostData, TestCreditCardCloseUrl)
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(body, response)
+	if err != nil {
+		return nil, err
+	}
 	return response, nil
 }

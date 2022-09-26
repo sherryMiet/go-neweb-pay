@@ -83,7 +83,7 @@ type QueryTradeInfoResult struct {
 	//ECI
 	ECI string
 	//請款金額
-	CloseAmt int
+	CloseAmt string
 	//請款狀態
 	CloseStatus string
 	//可退款餘額
