@@ -28,6 +28,7 @@ type TradeInfo struct {
 	//回傳參數
 	Result Result
 }
+
 type Result struct {
 	// **所有支付方式共同回傳參數**
 	//商店代號
@@ -38,6 +39,8 @@ type Result struct {
 	TradeNo string `db:"trade_no"`
 	//商店訂單編號
 	MerchantOrderNo string `db:"merchant_order_no"`
+	//支付狀態
+	TradeStatus int `db:"trade_status"`
 	//支付方式
 	PaymentType string `db:"payment_type"`
 	//回傳格式
