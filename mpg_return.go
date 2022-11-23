@@ -138,6 +138,11 @@ type Result struct {
 	PayAmt string `db:"pay_amt"`
 	//紅利折抵金額
 	RedDisAmt string `db:"red_dis_amt"`
+	//**ATM、超商代碼、超商條碼、超商取貨付款共同回傳參數**
+	//繳費截止日期
+	ExpireDate string `db:"expire_date"`
+	//金融機構代碼
+	BankCode string `db:"bank_code"`
 }
 
 func NewMPGGatewayResult() *MPGGatewayResult {
