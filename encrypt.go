@@ -43,9 +43,8 @@ func DecodeAes256(cipherText string, key string, iv string) string {
 	mode := cipher.NewCBCDecrypter(block, bIV)
 
 	mode.CryptBlocks([]byte(cipherTextDecoded), []byte(cipherTextDecoded))
-
-	fmt.Println(string(cipherTextDecoded))
-	return string(cipherTextDecoded)
+	result := PKCS7UnPadding(cipherTextDecoded, block.BlockSize())
+	return string(result)
 }
 
 func PKCS7Padding(ciphertext []byte) []byte {
@@ -54,7 +53,7 @@ func PKCS7Padding(ciphertext []byte) []byte {
 	return append(ciphertext, padtext...)
 }
 
-func PKCS7UnPadding(plantText []byte) []byte {
+func PKCS7UnPadding(plantText []byte, blockSize int) []byte {
 	length := len(plantText)
 	unpadding := int(plantText[length-1])
 	return plantText[:(length - unpadding)]
