@@ -73,7 +73,7 @@ type Result struct {
 	//2.若交易送至收單機構授權時已是失敗狀態，則本欄位的值會以空值回傳。
 	ECI string `db:"eci"`
 	//信用卡快速結帳使用狀態
-	TokenUseStatus string `db:"token_use_status"`
+	TokenUseStatus int `db:"token_use_status"`
 	//紅利折抵後實際金額
 	RedAmt string `db:"red_amt"`
 	//交易類別
