@@ -155,7 +155,7 @@ func (q *QueryTradeInfoRequestCall) Do() (*QueryTradeInfoResponse, error) {
 	PostData["Amt"] = strconv.Itoa(q.QueryTradeInfoRequest.Amt)
 	PostData["Gateway"] = q.Gateway
 
-	body, err := SendNewebPayRequest(&PostData, TestQueryTradeInfoUrl)
+	body, err := SendNewebPayRequest(&PostData, QueryTradeInfoUrl)
 	if err != nil {
 		return nil, err
 	}
